@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPI Shield AI | Detect. Understand. Protect.</title>
+<style>
+:root{--bg:#08111f;--panel:#101d30;--panel2:#14243a;--line:#263a55;--text:#edf5ff;--muted:#9db0c9;--cyan:#48d7e8;--green:#46d39a;--yellow:#ffc85c;--red:#ff6b78}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#12304b 0,transparent 34%),var(--bg);color:var(--text);font:15px/1.5 Inter,Segoe UI,Arial,sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:28px 20px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#42d9e8,#3187c9);display:grid;place-items:center;color:#071421;font-size:23px;font-weight:900}.brand h1{font-size:20px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px;letter-spacing:1.5px}.pill{border:1px solid #28516a;color:#8cecf2;padding:7px 12px;border-radius:30px;font-size:12px}
+.hero{margin:20px 0 25px}.hero h2{font-size:clamp(27px,4vw,40px);line-height:1.12;margin:0 0 10px}.hero h2 span{color:var(--cyan)}.hero p{color:var(--muted);margin:0;max-width:680px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:22px 0}.stat,.panel{background:linear-gradient(145deg,#122239,#0e1a2b);border:1px solid var(--line);border-radius:17px}.stat{padding:15px 18px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:4px}
+.layout{display:grid;grid-template-columns:1.35fr .85fr;gap:17px}.panel{padding:20px}.panel h3{margin:0 0 6px;font-size:18px}.sub{color:var(--muted);font-size:13px;margin:0 0 15px}
+textarea{width:100%;min-height:180px;resize:vertical;background:#091525;border:1px solid #304763;border-radius:12px;color:var(--text);padding:15px;font:14px/1.6 inherit;outline:none}textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #48d7e822}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;background:var(--cyan);color:#061522}.btn.secondary{background:#1c3049;color:#d9e9fa;border:1px solid #38516e}.btn:hover{filter:brightness(1.1)}.samples{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}.sample{font-size:12px;padding:7px 10px;border-radius:20px;background:#172a40;border:1px solid #304760;color:#c4d8ed;cursor:pointer}
+.result{margin-top:17px;padding:17px;border-radius:13px;background:#0a1727;border:1px solid var(--line);display:none}.result.show{display:block}.resulthead{display:flex;justify-content:space-between;align-items:center;gap:12px}.risk{font-weight:800;letter-spacing:1px}.score{font-size:30px;font-weight:800}.meter{height:9px;background:#24364b;border-radius:9px;overflow:hidden;margin:10px 0 15px}.meter div{height:100%;width:0;transition:width .3s}.finding{padding:10px 12px;background:#13243a;border-radius:9px;margin:8px 0;font-size:13px}.finding b{display:block}.advice{margin-top:13px;color:#dce9f8}.history-item{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #24364b;font-size:13px}.history-item:last-child{border:0}.tag{font-size:11px;font-weight:800}.safe{color:var(--green)}.medium{color:var(--yellow)}.high{color:var(--red)}.notice{font-size:12px;color:var(--muted);margin-top:18px;padding:12px;border-left:3px solid var(--yellow);background:#182438;border-radius:7px}.empty{color:var(--muted);font-size:13px;padding:16px 0}.footer{text-align:center;color:#7188a4;font-size:12px;margin-top:24px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.wrap{padding:20px 14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="logo">✓</div><div><h1>UPI Shield AI</h1><p>DETECT. UNDERSTAND. PROTECT.</p></div></div><div class="pill">● PROTOTYPE ACTIVE</div></header>
+<section class="hero"><h2>Stop scams before<br><span>they reach your money.</span></h2><p>Check suspicious messages for common fraud warning signs. Get an explainable risk assessment and practical safety steps.</p></section>
+<section class="stats">
+ <div class="stat"><small>Messages scanned this session</small><strong id="total">0</strong></div>
+ <div class="stat"><small>High-risk warnings</small><strong id="highCount">0</strong></div>
+ <div class="stat"><small>Detection engine</small><strong style="font-size:18px">Rule-based v1</strong></div>
+</section>
+<div class="layout">
+<main class="panel">
+<h3>Smart Message Scanner</h3><p class="sub">Paste an SMS, WhatsApp message or payment request. Never enter a real OTP, UPI PIN or password.</p>
+<textarea id="message" placeholder="Example: Your bank account will be blocked today. Click this link to claim your cashback reward..."></textarea>
+<div class="actions"><button class="btn" id="scan">Analyse message →</button><button class="btn secondary" id="clear">Clear</button></div>
+<div class="samples"><button class="sample" data-sample="Your bank account will be blocked today! Click https://example.com immediately to claim your cashback reward.">Test: suspicious message</button><button class="sample" data-sample="Hi, our class meeting is at 3 PM tomorrow. Please bring your notebook.">Test: normal message</button><button class="sample" data-sample="உங்கள் வங்கி கணக்கு முடக்கப்படும். உடனே OTP பகிரவும்.">Test: Tamil sample</button><button class="sample" data-sample="നിങ്ങളുടെ ബാങ്ക് അക്കൗണ്ട് ബ്ലോക്ക് ചെയ്യും. ഉടൻ OTP പങ്കിടുക.">Test: Malayalam sample</button></div>
+<div class="result" id="result" aria-live="polite"><div class="resulthead"><div><div class="sub" style="margin:0">RISK ASSESSMENT</div><div class="risk" id="level">—</div></div><div class="score" id="score">0/100</div></div><div class="meter"><div id="bar"></div></div><div id="findings"></div><div class="advice" id="advice"></div></div>
+</main>
+<aside class="panel"><h3>Recent scan activity</h3><p class="sub">Only scan summaries are shown here. Message contents are not saved.</p><div id="history" class="empty">No scans yet. Try one of the sample messages.</div>
+<div class="notice"><b>Safety first</b><br>Never share your UPI PIN or OTP. A person sending you money does not need your UPI PIN to receive it.</div>
+</aside>
+</div>
+<div class="notice"><b>Important limitation:</b> This prototype checks configured warning patterns. A LOW score does not prove a message is safe, and the tool does not connect to banks or verify transactions, QR recipients or payment status.</div>
+<div class="footer">UPI Shield AI · Hackathon prototype · No real financial transaction processing</div>
+</div>
+<script>
+const rules=[
+ {re:/\b(otp|one[\s-]?time password)\b.{0,60}\b(share|send|tell|give|provide)\b|\b(share|send|tell|give|provide)\b.{0,60}\b(otp|one[\s-]?time password)\b|OTP.{0,40}(பகிர|சொல்)|OTP.{0,40}(പങ്കിട|നൽക)/i,pts:40,label:"OTP sharing request"},
+ {re:/\b(upi pin|pin)\b.{0,60}\b(share|send|tell|give|enter)\b|\b(share|send|tell|give|enter)\b.{0,60}\b(upi pin|pin)\b|UPI PIN/i,pts:40,label:"UPI PIN request"},
+ {re:/\b(account|bank account)\b.{0,35}\b(block|suspend|close|freeze)\b|\b(block|suspend|freeze)\b.{0,35}\b(account|bank)\b|அக்கவுண்ட் முடக்க|അക്കൗണ്ട് ബ്ലോക്ക്/i,pts:20,label:"Account blocking threat"},
+ {re:/\b(urgent|immediately|today|within minutes|act now|உடனே|ഉടൻ)\b/i,pts:10,label:"Urgency pressure"},
+ {re:/\b(cashback|prize|reward|lottery|free gift|வெகுமதி|பரிசு|സമ്മാനം)\b/i,pts:15,label:"Unexpected reward or prize"},
+ {re:/https?:\/\/|www\./i,pts:20,label:"Contains a web link"},
+ {re:/\b(remote access|screen sharing|anydesk|teamviewer)\b/i,pts:25,label:"Remote access request"},
+ {re:/\b(bank details|card number|cvv|password)\b/i,pts:20,label:"Requests sensitive information"}
+];
+let total=0,high=0,history=[];
+const $=id=>document.getElementById(id);
+function scan(){
+ const msg=$("message").value.trim();if(msg.length<3){alert("Please enter a message with at least 3 characters.");return}
+ let score=0,found=[];
+ rules.forEach(r=>{let m=msg.match(r.re);if(m){score+=r.pts;found.push({label:r.label,evidence:m[0],pts:r.pts})}});
+ score=Math.min(score,100);
+ let level=score>=60?"HIGH":score>=30?"MEDIUM":"LOW";
+ total++;if(level==="HIGH")high++;
+ $("total").textContent=total;$("highCount").textContent=high;
+ $("level").textContent=level+" RISK";$("level").className="risk "+level.toLowerCase();
+ $("score").textContent=score+"/100";$("bar").style.width=score+"%";
+ $("bar").style.background=level==="HIGH"?"var(--red)":level==="MEDIUM"?"var(--yellow)":"var(--green)";
+ $("findings").innerHTML="";
+ if(found.length){found.forEach(f=>{let d=document.createElement("div");d.className="finding";let b=document.createElement("b");b.textContent="⚠ "+f.label+" (+"+f.pts+")";let s=document.createElement("span");s.textContent="Evidence: "+f.evidence;d.append(b,s);$("findings").append(d)})}
+ else{$("findings").textContent="No configured warning patterns detected."}
+ $("advice").textContent=level==="HIGH"?"Do not click links or share OTP/PIN. Stop the conversation and verify using your bank's official app or phone number.":level==="MEDIUM"?"Be careful. Verify the sender independently. Do not share credentials or make a payment under pressure.":"No configured warning patterns were found. This does NOT prove the message is safe. Verify unexpected requests independently.";
+ $("result").classList.add("show");
+ history.unshift({level,score,time:new Date().toLocaleTimeString()});renderHistory();
+}
+function renderHistory(){let h=$("history");h.className="";h.innerHTML="";history.slice(0,6).forEach(x=>{let d=document.createElement("div");d.className="history-item";let a=document.createElement("span");a.textContent=x.time+" · "+x.score+"/100";let b=document.createElement("b");b.textContent=x.level;b.className="tag "+x.level.toLowerCase();d.append(a,b);h.append(d)})}
+$("scan").addEventListener("click",scan);
+$("clear").addEventListener("click",()=>{$("message").value="";$("result").classList.remove("show")});
+document.querySelectorAll("[data-sample]").forEach(b=>b.addEventListener("click",()=>{$("message").value=b.dataset.sample;scan()}));
+</script>
+</body></html>
